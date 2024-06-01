@@ -13,21 +13,20 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
 class ImageRepository @Inject constructor(
-    private val imageDao: GoogleImageDao,
     private val database: AppDatabase,
     private val service: ImageApi,
 ) {
 
     suspend fun clearDatabase() {
-        imageDao.clearAll()
-        Log.i("HELLO WORLD", "DONE")
+        database.imageDao.clearAll()
+        database.searchParamDao.clearAll()
     }
 
     fun getImages(query: String): Pager<Int, ImageEntity> {
         val pager = Pager(
             config = PagingConfig(pageSize = 10),
             pagingSourceFactory = {
-                imageDao.pagingSource()
+                database.imageDao.pagingSource()
             },
             remoteMediator = ImageRemoteMediator(
                 database = database,

@@ -17,8 +17,7 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun provideImageRepository(
-        imageDao: GoogleImageDao,
         database: AppDatabase,
         service: ImageApi,
-    ): ImageRepository = ImageRepository(imageDao, database, service)
+    ): ImageRepository = ImageRepository(database, service)
 }

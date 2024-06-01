@@ -1,4 +1,4 @@
-package com.example.googleimage.presentation.image_list
+package com.example.googleimage.presentation.image_list.components
 
 import android.util.TypedValue
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,17 +22,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.googleimage.R
-import com.example.googleimage.domain.model.GoogleImage
-import java.security.AccessController.getContext
+import com.example.googleimage.domain.model.ImageEntity
 
 
 @Composable
 fun ImageItem(
-    image: GoogleImage,
+    image: ImageEntity,
     modifier: Modifier,
 ) {
-    val context = LocalContext.current
-
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(4.dp),

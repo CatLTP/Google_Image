@@ -6,15 +6,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.googleimage.presentation.image_list.ImageListScreen
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.googleimage.domain.model.Screen
+import com.example.googleimage.presentation.image_detail.ImageDetailScreen
+import com.example.googleimage.presentation.image_detail.ImageDetailViewModel
+import com.example.googleimage.presentation.image_list.components.ImageListScreen
 import com.example.googleimage.presentation.image_list.ImageListViewModel
 import com.example.googleimage.ui.theme.GoogleImageTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,14 +37,44 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel = hiltViewModel<ImageListViewModel>()
-                    val imageState by viewModel.screenState.collectAsStateWithLifecycle()
-                    ImageListScreen(
-                        viewModel,
-                        imageState,
-                    )
+                    val navController = rememberNavController()
+                    Navigation(navController)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun Navigation(navController: NavHostController) {
+    val imageListViewModel = hiltViewModel<ImageListViewModel>()
+    val imageDetailViewModel = hiltViewModel<ImageDetailViewModel>()
+
+    NavHost(navController = navController, startDestination = Screen.ImageListScreen.route) {
+        composable(route = Screen.ImageListScreen.route) {
+            val imageState by imageListViewModel.screenState.collectAsStateWithLifecycle()
+            ImageListScreen(
+                imageListViewModel,
+                imageState,
+                onClickImageItem = {
+                    navController.navigate(Screen.ImageDetailScreen.withArgs(id.toString()))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ImageDetailScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                }
+            )
+        ) {
+            ImageDetailScreen(
+                imageDetailViewModel
+            )
         }
     }
 }

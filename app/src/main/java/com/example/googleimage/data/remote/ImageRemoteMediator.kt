@@ -9,6 +9,7 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.googleimage.data.local.AppDatabase
 import com.example.googleimage.domain.model.ImageEntity
+import com.example.googleimage.domain.model.SearchParamEntity
 import java.io.IOException
 import javax.inject.Inject
 
@@ -32,16 +33,17 @@ class ImageRemoteMediator @Inject constructor(
                     return MediatorResult.Success(
                         endOfPaginationReached = true
                     )
-                // if last item is null then we have reached the end of data list and there are no
-                // more items to load
+                // if remote key is null, it means we are at the first page since there are cached
+                // record of the key
                 LoadType.APPEND -> {
-                    val lastItem = state.lastItemOrNull()
-                    if (lastItem == null) {
-                        Log.i("HELLO WORLD", "NULL")
-                        return MediatorResult.Success(endOfPaginationReached = true)
+                    val remoteKey = database.withTransaction {
+                        database.searchParamDao.getParam(query)
                     }
-                    Log.i("HELLO WORLD", lastItem.id.toString())
-                    (lastItem.id / state.config.pageSize) + 1
+                    if (remoteKey == null) {
+                        1
+                    } else {
+                        remoteKey.page + 1
+                    }
                 }
             }
 
@@ -56,10 +58,12 @@ class ImageRemoteMediator @Inject constructor(
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     database.imageDao.clearAll()
+                    database.searchParamDao.clearAll()
                 }
-                //insert new updates to local database
+                //insert new updates to local database for caching
                 val imageList = response.images
                 database.imageDao.insertAll(imageList)
+                database.searchParamDao.insert(response.searchParameters)
             }
 
             MediatorResult.Success(

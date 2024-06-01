@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.googleimage.domain.model.ImageEntity
-import com.example.googleimage.domain.model.GoogleImage
 
 @Dao
 interface GoogleImageDao {
