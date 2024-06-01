@@ -1,6 +1,6 @@
 package com.example.googleimage.data.remote
 
-import com.example.googleimage.domain.model.ImageDto
+import com.example.googleimage.domain.model.remote.ResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -15,5 +15,5 @@ interface ImageApi {
         @Query("q") query: String,
         @Query("page") page: Int,
         @Query("num") pageCount: Int,
-    ) : ImageDto
+    ) : ResponseDto
 }

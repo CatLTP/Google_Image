@@ -1,5 +1,6 @@
 package com.example.googleimage.presentation.image_list.components
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.googleimage.R
-import com.example.googleimage.domain.model.ImageEntity
+import com.example.googleimage.domain.model.local.ImageEntity
 import com.example.googleimage.presentation.image_list.ImageListScreenEvent
 import com.example.googleimage.presentation.image_list.ImageListViewModel
 import com.example.googleimage.presentation.image_list.ImageScreenState
@@ -123,6 +124,7 @@ fun ImageListScreen(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     items(imageList.itemCount) { index ->
+                        Log.i("HELLO WORLD", imageList[index]?.id.toString())
                         if (imageList[index] != null) {
                             ImageItem(
                                 image = imageList[index]!!,
@@ -131,7 +133,7 @@ fun ImageListScreen(
                                     .height(220.dp)
                                     .clickable {
                                         //Navigate to image detail screen
-                                        onClickImageItem(imageList[index]!!.id)
+                                        onClickImageItem(imageList[index]!!.id!!)
                                     }
                             )
                         }

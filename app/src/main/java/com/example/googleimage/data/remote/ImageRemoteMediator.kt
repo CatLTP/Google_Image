@@ -8,8 +8,9 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.googleimage.data.local.AppDatabase
-import com.example.googleimage.domain.model.ImageEntity
-import com.example.googleimage.domain.model.SearchParamEntity
+import com.example.googleimage.domain.model.local.ImageEntity
+import com.example.googleimage.domain.model.toImageEntity
+import com.example.googleimage.domain.model.toSearchParamEntity
 import java.io.IOException
 import javax.inject.Inject
 
@@ -37,12 +38,13 @@ class ImageRemoteMediator @Inject constructor(
                 // record of the key
                 LoadType.APPEND -> {
                     val remoteKey = database.withTransaction {
-                        database.searchParamDao.getParam(query)
+                        database.searchParamDao.getParam()
                     }
-                    if (remoteKey == null) {
+                    if (remoteKey.isNullOrEmpty()) {
                         1
                     } else {
-                        remoteKey.page + 1
+                        val page = remoteKey.last().page
+                        page + 1
                     }
                 }
             }
@@ -61,9 +63,13 @@ class ImageRemoteMediator @Inject constructor(
                     database.searchParamDao.clearAll()
                 }
                 //insert new updates to local database for caching
-                val imageList = response.images
+                val imageList = response.images.map {
+                    it.toImageEntity(response.searchParameters)
+                }
+                val searchParam = response.searchParameters.toSearchParamEntity()
+
+                database.searchParamDao.insert(searchParam)
                 database.imageDao.insertAll(imageList)
-                database.searchParamDao.insert(response.searchParameters)
             }
 
             MediatorResult.Success(

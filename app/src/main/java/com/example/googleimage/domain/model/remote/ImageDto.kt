@@ -1,11 +1,6 @@
-package com.example.googleimage.domain.model
+package com.example.googleimage.domain.model.remote
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "images")
-data class ImageEntity(
-    @PrimaryKey(autoGenerate = true) val id : Int = 1,
+data class ImageDto(
     val title: String,
     val imageUrl: String,
     val imageWidth: Int,

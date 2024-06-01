@@ -1,14 +1,12 @@
 package com.example.googleimage.domain.repository
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.googleimage.data.local.AppDatabase
-import com.example.googleimage.data.local.GoogleImageDao
 import com.example.googleimage.data.remote.ImageApi
 import com.example.googleimage.data.remote.ImageRemoteMediator
-import com.example.googleimage.domain.model.ImageEntity
+import com.example.googleimage.domain.model.local.ImageEntity
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
