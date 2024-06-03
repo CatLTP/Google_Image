@@ -1,14 +1,16 @@
 package com.example.googleimage.presentation.image_detail
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import androidx.paging.map
+import com.example.googleimage.domain.model.toGoogleImage
 import com.example.googleimage.domain.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,25 +23,33 @@ class ImageDetailViewModel @Inject constructor(
     val screenState = _screenState.asStateFlow()
 
     init {
-        val id : Int = savedStateHandle["id"]!!
+        //get the selected image's index
+        val index : Int = savedStateHandle["index"]!!
         // Initialize the current images flow
         val imagePagingFlow = repository.pager
             .flow
+            .map { pagingData ->
+                pagingData.map {
+                    it.toGoogleImage()
+                }
+            }
             .cachedIn(viewModelScope)
         _screenState.value = _screenState.value.copy(
             imageFlow = imagePagingFlow,
-            currentId = id
+            currentItem = index
         )
     }
     fun onEvent(event: ImageDetailScreenEvent) {
-        when (event) {
-            is ImageDetailScreenEvent.OnLoadImage -> {
-                onLoadImage(event.id)
-            }
-        }
+       when (event) {
+           is ImageDetailScreenEvent.OnSwipe -> {
+               onSwipe(event.id)
+           }
+       }
     }
 
-    private fun onLoadImage(id: Int) {
-
+    private fun onSwipe(id: Int) {
+        _screenState.value = _screenState.value.copy(
+            currentItem = id
+        )
     }
 }

@@ -1,5 +1,7 @@
 package com.example.googleimage
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -10,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -19,10 +22,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.googleimage.domain.model.Screen
-import com.example.googleimage.presentation.image_detail.components.ImageDetailScreen
 import com.example.googleimage.presentation.image_detail.ImageDetailViewModel
-import com.example.googleimage.presentation.image_list.components.ImageListScreen
+import com.example.googleimage.presentation.image_detail.components.ImageDetailScreen
+import com.example.googleimage.presentation.image_list.ImageListScreenEvent
 import com.example.googleimage.presentation.image_list.ImageListViewModel
+import com.example.googleimage.presentation.image_list.components.ImageListScreen
 import com.example.googleimage.ui.theme.GoogleImageTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,7 +53,6 @@ class MainActivity : ComponentActivity() {
 fun Navigation(navController: NavHostController) {
     val imageListViewModel = hiltViewModel<ImageListViewModel>()
 
-
     NavHost(navController = navController, startDestination = Screen.ImageListScreen.route) {
         composable(route = Screen.ImageListScreen.route) {
             val imageState by imageListViewModel.screenState.collectAsStateWithLifecycle()
@@ -57,16 +60,15 @@ fun Navigation(navController: NavHostController) {
                 imageListViewModel,
                 imageState,
                 onClickImageItem = { imageId ->
-                    Log.i("HELLO WORLD", "NAVIGATE ITEM $imageId")
                     navController.navigate(Screen.ImageDetailScreen.withArgs(imageId.toString()))
                 }
             )
         }
 
         composable(
-            route = Screen.ImageDetailScreen.route + "/{id}",
+            route = Screen.ImageDetailScreen.route + "/{index}",
             arguments = listOf(
-                navArgument("id") {
+                navArgument("index") {
                     type = NavType.IntType
                     defaultValue = 0
                     nullable = false
@@ -75,8 +77,19 @@ fun Navigation(navController: NavHostController) {
         ) {
             val imageDetailViewModel = hiltViewModel<ImageDetailViewModel>()
             val imageState by imageDetailViewModel.screenState.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
             ImageDetailScreen(
+                viewModel = imageDetailViewModel,
                 imageState,
+                onClickWebNavigateButton = { link ->
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                    context.startActivity(intent)
+                },
+                onBackButtonPressed = {
+                    imageListViewModel.onEvent(ImageListScreenEvent.OnNavigateBack(it))
+                    navController.popBackStack()
+                }
             )
         }
     }

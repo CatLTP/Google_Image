@@ -19,12 +19,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.googleimage.R
+import com.example.googleimage.domain.model.GoogleImage
 import com.example.googleimage.domain.model.local.ImageEntity
 
 
 @Composable
 fun ImageItem(
-    image: ImageEntity,
+    image: GoogleImage,
     modifier: Modifier,
 ) {
     Card(

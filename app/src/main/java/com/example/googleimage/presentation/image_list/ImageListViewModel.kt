@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.example.googleimage.domain.model.toGoogleImage
 import com.example.googleimage.domain.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,11 @@ class ImageListViewModel @Inject constructor(
                     repository
                         .getImages(searchParam.q)
                         .flow
+                        .map { pagingData ->
+                            pagingData.map {
+                                it.toGoogleImage()
+                            }
+                        }
                         .cachedIn(viewModelScope)
                 else
                     emptyFlow()
@@ -54,6 +60,9 @@ class ImageListViewModel @Inject constructor(
             is ImageListScreenEvent.OnLoadingQuery -> {
                 onLoadingQuery(event.loading)
             }
+            is ImageListScreenEvent.OnNavigateBack -> {
+                onNavigateBack(event.index)
+            }
         }
     }
 
@@ -61,6 +70,13 @@ class ImageListViewModel @Inject constructor(
     private fun onQueryChange(query: String) {
         _screenState.value = _screenState.value.copy(
             searchQuery = query
+        )
+    }
+
+    //On user navigates back to list screen
+    private fun onNavigateBack(index: Int) {
+        _screenState.value = _screenState.value.copy(
+            scrollPosition = index
         )
     }
 
@@ -80,6 +96,11 @@ class ImageListViewModel @Inject constructor(
             //Initialize new images list flow
             val imagePagingFlow = repository.getImages(query)
                 .flow
+                .map { pagingData ->
+                    pagingData.map {
+                        it.toGoogleImage()
+                    }
+                }
                 .cachedIn(viewModelScope)
             _screenState.value = _screenState.value.copy(
                 imageFlow = imagePagingFlow,

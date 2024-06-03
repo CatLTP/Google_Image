@@ -33,3 +33,22 @@ fun SearchParamDto.toSearchParamEntity(): SearchParamEntity {
     )
 }
 
+fun ImageEntity.toGoogleImage() : GoogleImage {
+    return GoogleImage(
+        id = id!!,
+        title = title,
+        imageUrl = imageUrl,
+        imageWidth = imageWidth,
+        imageHeight = imageHeight,
+        thumbnailUrl = thumbnailUrl,
+        thumbnailWidth = thumbnailWidth,
+        thumbnailHeight = thumbnailHeight,
+        source = source,
+        domain = domain,
+        link = link,
+        googleUrl = googleUrl,
+        position = position,
+        pageNum = pageNum,
+    )
+}
+

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -26,10 +27,11 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -49,6 +51,10 @@ fun ImageListScreen(
     onClickImageItem: (Int) -> Unit,
 ) {
     val imageList = state.imageFlow.collectAsLazyPagingItems()
+    Log.i("NAVIGATE BACK", "scroll ${state.scrollPosition}")
+    val lazyGridState = rememberLazyGridState(
+        initialFirstVisibleItemIndex = state.scrollPosition
+    )
 
     /*
         Handle state of the screen
@@ -116,6 +122,7 @@ fun ImageListScreen(
                     modifier = Modifier.fillMaxSize(),
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.Center,
+                    state = lazyGridState,
                 ) {
                     items(imageList.itemCount) { index ->
                         if (imageList[index] != null) {
@@ -126,7 +133,7 @@ fun ImageListScreen(
                                     .height(220.dp)
                                     .clickable {
                                         //Navigate to image detail screen
-                                        onClickImageItem(imageList[index]!!.id!!)
+                                        onClickImageItem(index)
                                     }
                             )
                         }
