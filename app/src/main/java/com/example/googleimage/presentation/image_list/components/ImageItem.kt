@@ -37,7 +37,7 @@ fun ImageItem(
     ) {
         AsyncImage(
             modifier = Modifier.fillMaxWidth().height(150.dp),
-            model = image.imageUrl,
+            model = image.thumbnailUrl,
             contentScale = ContentScale.FillBounds,
             contentDescription = null,
         )

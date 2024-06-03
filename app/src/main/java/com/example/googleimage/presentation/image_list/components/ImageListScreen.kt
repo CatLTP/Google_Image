@@ -50,6 +50,17 @@ fun ImageListScreen(
 ) {
     val imageList = state.imageFlow.collectAsLazyPagingItems()
 
+    /*
+        Handle state of the screen
+    */
+    if (imageList.loadState.refresh == LoadState.Loading && state.imageFlow != emptyFlow<PagingData<ImageEntity>>()) {
+        // if we are loading a query then show a progress indicator
+        viewModel.onEvent(ImageListScreenEvent.OnLoadingQuery(true))
+    } else {
+        // Stop loading and show the result
+        viewModel.onEvent(ImageListScreenEvent.OnLoadingQuery(false))
+    }
+
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)
@@ -92,29 +103,12 @@ fun ImageListScreen(
                 shadowElevation = 0.dp,
                 content = {}
             )
-            // if we are loading a query then show a progress indicator
-            if (imageList.loadState.refresh == LoadState.Loading && state.imageFlow != emptyFlow<PagingData<ImageEntity>>()) {
+            if (state.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .fillMaxSize()
                         .wrapContentSize(Alignment.Center)
                         .size(100.dp)
-                )
-            }
-            // When the screen is initialized
-            else if (imageList.loadState.refresh == LoadState.Loading && state.imageFlow == emptyFlow<PagingData<ImageEntity>>()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Icon(
-                    painterResource(id = R.drawable.baseline_hail_24),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(150.dp)
-                        .align(Alignment.CenterHorizontally),
-                )
-                Text(
-                    text = "Your images go here",
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
                 )
             } else {
                 Spacer(modifier = Modifier.height(20.dp))
@@ -124,7 +118,6 @@ fun ImageListScreen(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     items(imageList.itemCount) { index ->
-                        Log.i("HELLO WORLD", imageList[index]?.id.toString())
                         if (imageList[index] != null) {
                             ImageItem(
                                 image = imageList[index]!!,

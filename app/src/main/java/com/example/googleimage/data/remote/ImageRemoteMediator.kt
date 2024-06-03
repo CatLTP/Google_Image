@@ -20,6 +20,18 @@ class ImageRemoteMediator @Inject constructor(
     private val service: ImageApi,
     private val query: String,
 ) : RemoteMediator<Int, ImageEntity>() {
+
+    override suspend fun initialize(): InitializeAction {
+        val cachedData = database.searchParamDao.getParam()
+
+        // We only need to call api when there is no cache data currently
+        return if (cachedData != null) {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        } else {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        }
+    }
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ImageEntity>
@@ -57,7 +69,8 @@ class ImageRemoteMediator @Inject constructor(
                 pageCount = 10,
             )
 
-            database.withTransaction {
+            //Cache the data using Room
+           database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     database.imageDao.clearAll()
                     database.searchParamDao.clearAll()

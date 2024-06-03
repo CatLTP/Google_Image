@@ -1,6 +1,7 @@
 package com.example.googleimage
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,7 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.googleimage.domain.model.Screen
-import com.example.googleimage.presentation.image_detail.ImageDetailScreen
+import com.example.googleimage.presentation.image_detail.components.ImageDetailScreen
 import com.example.googleimage.presentation.image_detail.ImageDetailViewModel
 import com.example.googleimage.presentation.image_list.components.ImageListScreen
 import com.example.googleimage.presentation.image_list.ImageListViewModel
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Navigation(navController: NavHostController) {
     val imageListViewModel = hiltViewModel<ImageListViewModel>()
-    val imageDetailViewModel = hiltViewModel<ImageDetailViewModel>()
+
 
     NavHost(navController = navController, startDestination = Screen.ImageListScreen.route) {
         composable(route = Screen.ImageListScreen.route) {
@@ -56,8 +56,9 @@ fun Navigation(navController: NavHostController) {
             ImageListScreen(
                 imageListViewModel,
                 imageState,
-                onClickImageItem = {
-                    navController.navigate(Screen.ImageDetailScreen.withArgs(id.toString()))
+                onClickImageItem = { imageId ->
+                    Log.i("HELLO WORLD", "NAVIGATE ITEM $imageId")
+                    navController.navigate(Screen.ImageDetailScreen.withArgs(imageId.toString()))
                 }
             )
         }
@@ -72,8 +73,10 @@ fun Navigation(navController: NavHostController) {
                 }
             )
         ) {
+            val imageDetailViewModel = hiltViewModel<ImageDetailViewModel>()
+            val imageState by imageDetailViewModel.screenState.collectAsStateWithLifecycle()
             ImageDetailScreen(
-                imageDetailViewModel
+                imageState,
             )
         }
     }
