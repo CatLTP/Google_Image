@@ -8,13 +8,10 @@ import androidx.compose.animation.core.ArcMode
 import androidx.compose.animation.core.ExperimentalAnimationSpecApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.keyframes
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,14 +20,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.googleimage.MainActivity
 import com.example.googleimage.R
 import com.example.googleimage.domain.model.GoogleImage
-import com.example.googleimage.ui.theme.Typography
 
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
@@ -62,12 +57,11 @@ fun ImageItem(
         with(sharedTransitionScope) {
             AsyncImage(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
+                    .fillMaxSize()
                     .clip(
                         shape = RoundedCornerShape(dimensionResource(id = R.dimen.rounded_corner))
                     )
-                    .sharedBounds(
+                    .sharedElement(
                         sharedTransitionScope.rememberSharedContentState(key = MainActivity.CacheKey.getImageKey(image.id)),
                         animatedVisibilityScope = animatedContentScope,
                         //override overlay to match image layout
@@ -82,21 +76,6 @@ fun ImageItem(
                     .build(),
                 contentScale = ContentScale.FillBounds,
                 contentDescription = null,
-            )
-            Text(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .sharedBounds(
-                        sharedTransitionScope.rememberSharedContentState(key = "text-${image.id}"),
-                        animatedVisibilityScope = animatedContentScope,
-                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
-                        boundsTransform = boundsTransformTime
-                    ),
-                text = image.title,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                style = Typography.titleMedium,
             )
         }
     }

@@ -1,5 +1,7 @@
 package com.example.googleimage.presentation.image_list.components
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -32,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -55,7 +58,7 @@ fun ImageListScreen(
 ) {
     val imageList = state.imageFlow.collectAsLazyPagingItems()
     val lazyGridState = rememberLazyGridState()
-
+    val context = LocalContext.current
     /*
         Handle state of the screen
     */
@@ -68,6 +71,7 @@ fun ImageListScreen(
     }
 
     LaunchedEffect(state.scrollPosition) {
+        Log.i("SCROLL POSITION", state.scrollPosition.toString())
         lazyGridState.scrollToItem(state.scrollPosition)
     }
     Scaffold { paddingValues ->
@@ -83,7 +87,11 @@ fun ImageListScreen(
                         },
                         onSearch = {
                             // start searching when we submit the query
-                            viewModel.onEvent(ImageListScreenEvent.OnSearchImages(it))
+                            if (it.isEmpty()) {
+                                Toast.makeText(context, "Please enter what you want to search", Toast.LENGTH_LONG).show()
+                            } else {
+                                viewModel.onEvent(ImageListScreenEvent.OnSearchImages(it))
+                            }
                         },
                         expanded = false,
                         onExpandedChange = {},
@@ -132,7 +140,7 @@ fun ImageListScreen(
                             ImageItem(
                                 image = imageList[index]!!,
                                 modifier = Modifier
-                                    .padding(10.dp)
+                                    .padding(dimensionResource(id = R.dimen.image_padding))
                                     .height(220.dp)
                                     .clickable {
                                         //Navigate to image detail screen

@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Google Image</string>
-    <string name="web_navigate">Go to this page</string>
+    <string name="web_navigate">Go to the image\'s page</string>
 </resources>

@@ -34,8 +34,6 @@ fun ImageDetailScreen(
 ) {
 
     val image = state.imageFlow.collectAsLazyPagingItems()
-    val beyondViewPageCount = 2
-
     //Init pager state for HorizontalPager component
     val pagerState = rememberPagerState(
         initialPage = state.currentItem,
@@ -70,7 +68,6 @@ fun ImageDetailScreen(
             // Image's detail lists
             HorizontalPager(
                 state = pagerState,
-                beyondViewportPageCount = beyondViewPageCount
             ) { index ->
                 if (image[index] != null) {
                     ImageDetailItem(
@@ -80,6 +77,7 @@ fun ImageDetailScreen(
                         sharedTransitionScope,
                         animatedContentScope,
                         onClickWebNavigateButton,
+                        pagerState.currentPage == index,
                     )
                 }
             }

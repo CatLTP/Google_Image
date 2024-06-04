@@ -1,7 +1,6 @@
 package com.example.googleimage.data.remote
 
 import android.net.http.HttpException
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -20,6 +19,7 @@ class ImageRemoteMediator @Inject constructor(
     private val service: ImageApi,
     private val query: String,
 ) : RemoteMediator<Int, ImageEntity>() {
+
 
     override suspend fun initialize(): InitializeAction {
         val cachedData = database.searchParamDao.getParam()
@@ -69,19 +69,22 @@ class ImageRemoteMediator @Inject constructor(
                 pageCount = 10,
             )
 
+
             //Cache the data using Room
-           database.withTransaction {
-                if (loadType == LoadType.REFRESH) {
+            database.withTransaction {
+                val param = database.searchParamDao.getParam()
+                //We clear the cached data of the previous query
+                if (loadType == LoadType.REFRESH || (!param.isNullOrEmpty() && param.first().q != query)) {
                     database.imageDao.clearAll()
                     database.searchParamDao.clearAll()
                 }
                 //insert new updates to local database for caching
+                val searchParam = response.searchParameters.toSearchParamEntity()
+                database.searchParamDao.insert(searchParam)
+
                 val imageList = response.images.map {
                     it.toImageEntity(response.searchParameters)
                 }
-                val searchParam = response.searchParameters.toSearchParamEntity()
-
-                database.searchParamDao.insert(searchParam)
                 database.imageDao.insertAll(imageList)
             }
 

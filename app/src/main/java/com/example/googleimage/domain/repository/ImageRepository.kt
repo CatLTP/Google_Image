@@ -1,5 +1,6 @@
 package com.example.googleimage.domain.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -50,6 +51,7 @@ class ImageRepository @Inject constructor(
     }
 
     fun getImages(query: String): Pager<Int, ImageEntity> {
+
         pager = Pager(
             config = PagingConfig(pageSize = 10),
             pagingSourceFactory = {

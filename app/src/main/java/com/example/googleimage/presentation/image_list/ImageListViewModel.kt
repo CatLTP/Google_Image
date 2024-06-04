@@ -7,6 +7,7 @@ import androidx.paging.map
 import com.example.googleimage.domain.model.toGoogleImage
 import com.example.googleimage.domain.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -21,6 +22,8 @@ class ImageListViewModel @Inject constructor(
 
     private val _screenState = MutableStateFlow(ImageScreenState())
     val screenState = _screenState.asStateFlow()
+
+    private var getImageJob : Job? = null
 
     init {
         //Initialize new images list flow
@@ -89,8 +92,11 @@ class ImageListViewModel @Inject constructor(
 
     //Get images from user's query
     private fun getImages(query: String) {
-        viewModelScope.launch {
-            //Clear the current database since we only cache the last query result
+        //One call at a time
+        getImageJob?.cancel()
+
+        getImageJob = viewModelScope.launch {
+            //Clear the current database since we only cache the latest query result
             repository.clearDatabase()
 
             //Initialize new images list flow
