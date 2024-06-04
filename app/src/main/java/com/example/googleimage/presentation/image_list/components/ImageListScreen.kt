@@ -1,6 +1,8 @@
 package com.example.googleimage.presentation.image_list.components
 
-import android.util.Log
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +29,6 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,18 +44,17 @@ import com.example.googleimage.presentation.image_list.ImageListViewModel
 import com.example.googleimage.presentation.image_list.ImageScreenState
 import kotlinx.coroutines.flow.emptyFlow
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun ImageListScreen(
     viewModel: ImageListViewModel,
     state: ImageScreenState,
     onClickImageItem: (Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     val imageList = state.imageFlow.collectAsLazyPagingItems()
-    Log.i("NAVIGATE BACK", "scroll ${state.scrollPosition}")
-    val lazyGridState = rememberLazyGridState(
-        initialFirstVisibleItemIndex = state.scrollPosition
-    )
+    val lazyGridState = rememberLazyGridState()
 
     /*
         Handle state of the screen
@@ -67,6 +67,9 @@ fun ImageListScreen(
         viewModel.onEvent(ImageListScreenEvent.OnLoadingQuery(false))
     }
 
+    LaunchedEffect(state.scrollPosition) {
+        lazyGridState.scrollToItem(state.scrollPosition)
+    }
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)
@@ -134,7 +137,9 @@ fun ImageListScreen(
                                     .clickable {
                                         //Navigate to image detail screen
                                         onClickImageItem(index)
-                                    }
+                                    },
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedContentScope = animatedContentScope
                             )
                         }
                     }

@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,6 +24,16 @@ class ImageDetailViewModel @Inject constructor(
     val screenState = _screenState.asStateFlow()
 
     init {
+        //get the title for the detail screen
+        viewModelScope.launch {
+            val title = repository.getSearchParam()?.q
+            if (title != null) {
+                _screenState.value = _screenState.value.copy(
+                    title = title
+                )
+            }
+        }
+
         //get the selected image's index
         val index : Int = savedStateHandle["index"]!!
         // Initialize the current images flow
@@ -36,7 +47,7 @@ class ImageDetailViewModel @Inject constructor(
             .cachedIn(viewModelScope)
         _screenState.value = _screenState.value.copy(
             imageFlow = imagePagingFlow,
-            currentItem = index
+            currentItem = index,
         )
     }
     fun onEvent(event: ImageDetailScreenEvent) {

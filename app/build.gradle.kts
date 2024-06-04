@@ -70,7 +70,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.material3)
 
+    // Navigation - Shared Element transition
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.foundation)
+    implementation (libs.androidx.navigation.compose)
+
+    // higher version of the library is not compatible with other libraries
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
     // Dagger - Hilt

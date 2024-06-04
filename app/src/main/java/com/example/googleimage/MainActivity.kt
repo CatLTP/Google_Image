@@ -3,9 +3,10 @@ package com.example.googleimage
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -49,48 +50,60 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun Navigation(navController: NavHostController) {
     val imageListViewModel = hiltViewModel<ImageListViewModel>()
 
-    NavHost(navController = navController, startDestination = Screen.ImageListScreen.route) {
-        composable(route = Screen.ImageListScreen.route) {
-            val imageState by imageListViewModel.screenState.collectAsStateWithLifecycle()
-            ImageListScreen(
-                imageListViewModel,
-                imageState,
-                onClickImageItem = { imageId ->
-                    navController.navigate(Screen.ImageDetailScreen.withArgs(imageId.toString()))
-                }
-            )
-        }
-
-        composable(
-            route = Screen.ImageDetailScreen.route + "/{index}",
-            arguments = listOf(
-                navArgument("index") {
-                    type = NavType.IntType
-                    defaultValue = 0
-                    nullable = false
-                }
-            )
+    //Layout for shared transition with navigation compose
+    SharedTransitionLayout {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.ImageListScreen.route,
         ) {
-            val imageDetailViewModel = hiltViewModel<ImageDetailViewModel>()
-            val imageState by imageDetailViewModel.screenState.collectAsStateWithLifecycle()
-            val context = LocalContext.current
+            composable(route = Screen.ImageListScreen.route) {
+                val imageState by imageListViewModel.screenState.collectAsStateWithLifecycle()
+                ImageListScreen(
+                    imageListViewModel,
+                    imageState,
+                    onClickImageItem = { imageId ->
+                        navController.navigate(Screen.ImageDetailScreen.withArgs(imageId.toString()))
+                    },
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedContentScope = this@composable
+                )
+            }
 
-            ImageDetailScreen(
-                viewModel = imageDetailViewModel,
-                imageState,
-                onClickWebNavigateButton = { link ->
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                    context.startActivity(intent)
-                },
-                onBackButtonPressed = {
-                    imageListViewModel.onEvent(ImageListScreenEvent.OnNavigateBack(it))
-                    navController.popBackStack()
-                }
-            )
+            composable(
+                route = Screen.ImageDetailScreen.route + "/{index}",
+                arguments = listOf(
+                    navArgument("index") {
+                        type = NavType.IntType
+                        defaultValue = 0
+                        nullable = false
+                    }
+                )
+            ) {
+                //reset the viewmodel everytime we enter the screen
+                val imageDetailViewModel = hiltViewModel<ImageDetailViewModel>()
+                val imageState by imageDetailViewModel.screenState.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+
+                ImageDetailScreen(
+                    viewModel = imageDetailViewModel,
+                    imageState,
+                    onClickWebNavigateButton = { link ->
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                        context.startActivity(intent)
+                    },
+                    onBackButtonPressed = {
+                        imageListViewModel.onEvent(ImageListScreenEvent.OnNavigateBack(it))
+                        navController.popBackStack()
+                    },
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedContentScope = this@composable
+                )
+            }
         }
     }
 }

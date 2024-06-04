@@ -8,4 +8,5 @@ import kotlinx.coroutines.flow.emptyFlow
 data class ImageDetailScreenState(
     val currentItem: Int = 0,
     val imageFlow: Flow<PagingData<GoogleImage>> = emptyFlow(),
+    val title: String = "",
 )

@@ -16,7 +16,7 @@ class ImageRepository @Inject constructor(
     private val service: ImageApi,
 ) {
 
-    var pager : Pager<Int, ImageEntity>
+    var pager: Pager<Int, ImageEntity>
         private set
 
     init {
@@ -41,8 +41,12 @@ class ImageRepository @Inject constructor(
     }
 
     //get the latest search param
-    suspend fun getSearchParam() : SearchParamEntity? {
-        return database.searchParamDao.getParam()?.first()
+    suspend fun getSearchParam(): SearchParamEntity? {
+        return if (database.searchParamDao.getParam().isNullOrEmpty()) {
+            null
+        } else {
+            database.searchParamDao.getParam()?.first()
+        }
     }
 
     fun getImages(query: String): Pager<Int, ImageEntity> {
