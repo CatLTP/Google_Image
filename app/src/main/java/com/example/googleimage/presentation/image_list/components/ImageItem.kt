@@ -8,7 +8,6 @@ import androidx.compose.animation.core.ArcMode
 import androidx.compose.animation.core.ExperimentalAnimationSpecApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.keyframes
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,13 +23,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.googleimage.MainActivity
 import com.example.googleimage.R
 import com.example.googleimage.domain.model.GoogleImage
 import com.example.googleimage.ui.theme.Typography
@@ -71,7 +68,7 @@ fun ImageItem(
                         shape = RoundedCornerShape(dimensionResource(id = R.dimen.rounded_corner))
                     )
                     .sharedBounds(
-                        sharedTransitionScope.rememberSharedContentState(key = "image-${image.id}"),
+                        sharedTransitionScope.rememberSharedContentState(key = MainActivity.CacheKey.getImageKey(image.id)),
                         animatedVisibilityScope = animatedContentScope,
                         //override overlay to match image layout
                         clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(20.dp)),
@@ -80,8 +77,8 @@ fun ImageItem(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(image.imageUrl)
                     .crossfade(true)
-                    .placeholderMemoryCacheKey("image-${image.id}") //  same key as shared element key
-                    .memoryCacheKey("image-${image.id}") // same key as shared element key
+                    .placeholderMemoryCacheKey(MainActivity.CacheKey.getImageKey(image.id)) //  same key as shared element key
+                    .memoryCacheKey(MainActivity.CacheKey.getImageKey(image.id)) // same key as shared element key
                     .build(),
                 contentScale = ContentScale.FillBounds,
                 contentDescription = null,
