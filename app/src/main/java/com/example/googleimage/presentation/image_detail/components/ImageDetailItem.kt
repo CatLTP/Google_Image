@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,7 +42,8 @@ fun ImageDetailItem(
     image: GoogleImage,
     modifier: Modifier,
     sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
+    animatedContentScope: AnimatedContentScope,
+    onClickWebNavigateButton: (String) -> Unit,
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -126,6 +129,22 @@ fun ImageDetailItem(
                     fontStyle = FontStyle.Italic,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            //Web navigation's button
+            Button(
+                modifier = Modifier
+                    .padding(bottom = dimensionResource(id = R.dimen.screen_padding))
+                    .align(Alignment.CenterHorizontally)
+                ,
+                onClick = {
+                    onClickWebNavigateButton(image.link)
+                },
+            ) {
+                Text(
+                    text = stringResource(id = R.string.web_navigate),
+                    style = Typography.titleLarge,
                 )
             }
         }

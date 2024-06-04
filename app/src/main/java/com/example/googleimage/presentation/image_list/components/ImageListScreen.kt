@@ -1,5 +1,6 @@
 package com.example.googleimage.presentation.image_list.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope

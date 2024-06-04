@@ -95,7 +95,6 @@ fun Navigation(navController: NavHostController) {
                 val context = LocalContext.current
 
                 ImageDetailScreen(
-                    viewModel = imageDetailViewModel,
                     imageState,
                     onClickWebNavigateButton = { link ->
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
