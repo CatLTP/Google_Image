@@ -22,7 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.googleimage.domain.model.Screen
+import com.example.googleimage.domain.model.app.Screen
 import com.example.googleimage.presentation.image_detail.ImageDetailViewModel
 import com.example.googleimage.presentation.image_detail.components.ImageDetailScreen
 import com.example.googleimage.presentation.image_list.ImageListScreenEvent

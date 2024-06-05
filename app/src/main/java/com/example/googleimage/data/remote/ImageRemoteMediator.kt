@@ -8,8 +8,8 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.googleimage.data.local.AppDatabase
 import com.example.googleimage.domain.model.local.ImageEntity
-import com.example.googleimage.domain.model.toImageEntity
-import com.example.googleimage.domain.model.toSearchParamEntity
+import com.example.googleimage.domain.model.app.toImageEntity
+import com.example.googleimage.domain.model.app.toSearchParamEntity
 import java.io.IOException
 import javax.inject.Inject
 

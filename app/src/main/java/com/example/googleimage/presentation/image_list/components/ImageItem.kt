@@ -25,7 +25,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.googleimage.MainActivity
 import com.example.googleimage.R
-import com.example.googleimage.domain.model.GoogleImage
+import com.example.googleimage.domain.model.app.GoogleImage
 
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)

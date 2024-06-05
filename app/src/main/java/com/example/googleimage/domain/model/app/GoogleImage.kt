@@ -1,4 +1,4 @@
-package com.example.googleimage.domain.model
+package com.example.googleimage.domain.model.app
 
 data class GoogleImage(
     val id: Int,

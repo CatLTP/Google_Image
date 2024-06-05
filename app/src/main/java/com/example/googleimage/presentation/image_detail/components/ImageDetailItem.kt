@@ -1,5 +1,6 @@
 package com.example.googleimage.presentation.image_detail.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -28,7 +29,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.googleimage.MainActivity
 import com.example.googleimage.R
-import com.example.googleimage.domain.model.GoogleImage
+import com.example.googleimage.domain.model.app.GoogleImage
 import com.example.googleimage.ui.theme.Typography
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
@@ -81,7 +82,7 @@ fun ImageDetailItem(
                     .memoryCacheKey(MainActivity.CacheKey.getImageKey(image.id)) // same key as shared element key
                     .build(),
                 contentDescription = null,
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Fit,
                 filterQuality = FilterQuality.High
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacer)))

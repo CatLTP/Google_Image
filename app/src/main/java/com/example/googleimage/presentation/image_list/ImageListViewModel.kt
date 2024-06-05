@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.example.googleimage.domain.model.toGoogleImage
+import com.example.googleimage.domain.model.app.toGoogleImage
 import com.example.googleimage.domain.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -30,6 +30,8 @@ class ImageListViewModel @Inject constructor(
         viewModelScope.launch {
             val searchParam = repository.getSearchParam()
 
+            //Fetching images based on the latest query,
+            //If user hasn't searched yet, then show nothing
             val imagePagingFlow =
                 if (searchParam != null)
                     repository
@@ -55,26 +57,35 @@ class ImageListViewModel @Inject constructor(
             is ImageListScreenEvent.OnSearchImages -> {
                 getImages(query = event.query)
             }
-
             is ImageListScreenEvent.OnQueryChange -> {
-                onQueryChange(query = event.query)
+                updateQueryState(query = event.query)
             }
-
             is ImageListScreenEvent.OnLoadingQuery -> {
                 onLoadingQuery(event.loading)
             }
             is ImageListScreenEvent.OnNavigateBack -> {
                 onNavigateBack(event.index)
             }
+            is ImageListScreenEvent.ShowError -> {
+                updateErrorState(event.error)
+            }
         }
     }
 
-    //Update the query on search bar when user is typing
-    private fun onQueryChange(query: String) {
+    //Update query on the UI search bar when user is typing
+    private fun updateQueryState(query: String) {
         _screenState.value = _screenState.value.copy(
             searchQuery = query
         )
     }
+
+    //Update the UI state when error occurs
+    private fun updateErrorState(error: Boolean) {
+        _screenState.value = _screenState.value.copy(
+            showError = error,
+        )
+    }
+
 
     //On user navigates back to list screen
     private fun onNavigateBack(index: Int) {
@@ -110,6 +121,7 @@ class ImageListViewModel @Inject constructor(
                 .cachedIn(viewModelScope)
             _screenState.value = _screenState.value.copy(
                 imageFlow = imagePagingFlow,
+                showError = false,
             )
         }
     }

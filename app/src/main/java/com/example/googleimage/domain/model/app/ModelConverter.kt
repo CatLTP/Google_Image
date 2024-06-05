@@ -1,5 +1,6 @@
-package com.example.googleimage.domain.model
+package com.example.googleimage.domain.model.app
 
+import com.example.googleimage.domain.model.app.GoogleImage
 import com.example.googleimage.domain.model.local.ImageEntity
 import com.example.googleimage.domain.model.local.SearchParamEntity
 import com.example.googleimage.domain.model.remote.ImageDto

@@ -1,4 +1,4 @@
-package com.example.googleimage.domain.model
+package com.example.googleimage.domain.model.app
 
 sealed class Screen(val route: String) {
     data object ImageListScreen : Screen("list_screen")

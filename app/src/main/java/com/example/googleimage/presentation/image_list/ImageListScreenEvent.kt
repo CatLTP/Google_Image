@@ -5,4 +5,5 @@ sealed class ImageListScreenEvent {
     data class OnSearchImages(val query: String): ImageListScreenEvent()
     data class OnLoadingQuery(val loading: Boolean): ImageListScreenEvent()
     data class OnNavigateBack(val index: Int): ImageListScreenEvent()
+    data class ShowError(val error: Boolean): ImageListScreenEvent()
 }

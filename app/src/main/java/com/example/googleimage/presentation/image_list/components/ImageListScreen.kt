@@ -1,6 +1,5 @@
 package com.example.googleimage.presentation.image_list.components
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -23,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,8 +34,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -45,6 +48,7 @@ import com.example.googleimage.domain.model.local.ImageEntity
 import com.example.googleimage.presentation.image_list.ImageListScreenEvent
 import com.example.googleimage.presentation.image_list.ImageListViewModel
 import com.example.googleimage.presentation.image_list.ImageScreenState
+import com.example.googleimage.ui.theme.Typography
 import kotlinx.coroutines.flow.emptyFlow
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -65,13 +69,15 @@ fun ImageListScreen(
     if (imageList.loadState.refresh == LoadState.Loading && state.imageFlow != emptyFlow<PagingData<ImageEntity>>()) {
         // if we are loading a query then show a progress indicator
         viewModel.onEvent(ImageListScreenEvent.OnLoadingQuery(true))
+    } else if (imageList.loadState.hasError) {
+        // if an error occurs, show warning
+        viewModel.onEvent(ImageListScreenEvent.ShowError(true))
     } else {
         // Stop loading and show the result
         viewModel.onEvent(ImageListScreenEvent.OnLoadingQuery(false))
     }
 
     LaunchedEffect(state.scrollPosition) {
-        Log.i("SCROLL POSITION", state.scrollPosition.toString())
         lazyGridState.scrollToItem(state.scrollPosition)
     }
     Scaffold { paddingValues ->
@@ -88,7 +94,11 @@ fun ImageListScreen(
                         onSearch = {
                             // start searching when we submit the query
                             if (it.isEmpty()) {
-                                Toast.makeText(context, "Please enter what you want to search", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    context,
+                                    "Please enter what you want to search",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             } else {
                                 viewModel.onEvent(ImageListScreenEvent.OnSearchImages(it))
                             }
@@ -126,6 +136,24 @@ fun ImageListScreen(
                         .fillMaxSize()
                         .wrapContentSize(Alignment.Center)
                         .size(100.dp)
+                )
+            } else if (state.showError) {
+                Icon(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(dimensionResource(id = R.dimen.screen_padding))
+                        .size(100.dp),
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = Color.Red
+                )
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(dimensionResource(id = R.dimen.screen_padding)),
+                    text = stringResource(R.string.error_message),
+                    style = Typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                 )
             } else {
                 Spacer(modifier = Modifier.height(20.dp))
