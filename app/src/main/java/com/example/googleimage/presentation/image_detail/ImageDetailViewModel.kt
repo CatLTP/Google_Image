@@ -50,17 +50,5 @@ class ImageDetailViewModel @Inject constructor(
             currentItem = index,
         )
     }
-    fun onEvent(event: ImageDetailScreenEvent) {
-       when (event) {
-           is ImageDetailScreenEvent.OnSwipe -> {
-               onSwipe(event.id)
-           }
-       }
-    }
 
-    private fun onSwipe(id: Int) {
-        _screenState.value = _screenState.value.copy(
-            currentItem = id
-        )
-    }
 }
